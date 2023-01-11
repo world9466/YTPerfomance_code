@@ -79,7 +79,8 @@ def videodata(table_content,bangumi_name):
     table = pd.merge(table_report,new_content, on = 'video_id',how = 'inner')
     
     # 按影片發布時間排序
-    table = table.sort_values(by = ['time_published'],ascending = True)
+    #table = table.sort_values(by = ['time_published'],ascending = True)
+    table = table.sort_values(by = ['Views'],ascending = False)
     table = table.reset_index(drop = True)
     table.index+=1
 
@@ -109,9 +110,9 @@ else:
 #從完整的影片清單逐項確認表格是否存在，挑出本月的節目
 full_video_list = ['小麥的健康筆記','小豪出任務','中天車享家_朱朱哥來聊車','世界越來越盧','民間特偵組',
 '全球政經週報','老Z調查線','你的豪朋友','宏色封鎖線_宏色禁區','金牌特派','阿比妹妹','政治新人榜','洪流洞見',
-'流行星球','食安趨勢報告','真心話大冒險','愛吃星球','新聞千里馬','新聞龍捲風','詩瑋愛健康',
+'流行星球','食安趨勢報告','真心話大冒險','新聞千里馬','新聞龍捲風','詩瑋愛健康',
 '詭案橞客室','嗶!就是要有錢','窩星球','綠也掀桌','與錢同行','論文門開箱','鄭妹看世界',
-'螃蟹秀開鍘','獸身男女','靈異錯別字_鬼錯字','琴謙天下事']
+'螃蟹秀開鍘','獸身男女','靈異錯別字_鬼錯字','琴謙天下事','誰謀殺了言論自由']
 
 video_list = []
 for video in full_video_list:
@@ -126,6 +127,7 @@ for video in full_video_list:
 ########################  表格輸出  ###########################
 
 for video in video_list:
+    print('匹配節目"{}"的資料...'.format(video))
     tablecontent = pd.read_csv('頻道資訊/{}/Content/Table data.csv'.format(video),encoding = 'utf8')
     table1 = videodata(tablecontent,video)
     table1.to_csv('輸出報表/bangumi_report/{}.csv'.format(video),encoding = 'utf-8-sig')   # 用utf8會亂碼，big5會缺少資料(部分無法解碼)    

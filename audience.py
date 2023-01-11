@@ -9,7 +9,7 @@ full_video_list = ['小麥的健康筆記','小豪出任務','中天車享家_�
 '全球政經週報','老Z調查線','你的豪朋友','宏色封鎖線_宏色禁區','金牌特派','阿比妹妹','政治新人榜','洪流洞見',
 '流行星球','食安趨勢報告','真心話大冒險','愛吃星球','新聞千里馬','新聞龍捲風','詩瑋愛健康',
 '詭案橞客室','嗶!就是要有錢','窩星球','綠也掀桌','與錢同行','論文門開箱','鄭妹看世界',
-'螃蟹秀開鍘','獸身男女','靈異錯別字_鬼錯字','琴謙天下事']
+'螃蟹秀開鍘','獸身男女','靈異錯別字_鬼錯字','琴謙天下事','誰謀殺了言論自由']
 
 video_list = []
 for video in full_video_list:
@@ -27,7 +27,12 @@ for video in full_video_list:
 def table_generator(table):
     #訂閱
     sub_yes = table["ViewsSubs"][1]
-    sub_no = table["ViewsSubs"][2]
+    # 有時候會沒讀取到未訂閱的人數，就用全部人數減去已訂閱人數
+    try:
+        sub_no = table["ViewsSubs"][2]
+    except:
+        sub_no = table["ViewsSubs"][0] - table["ViewsSubs"][1]
+    
     totalsub = table["ViewsSubs"][0]
     yes = round(sub_yes/totalsub,2)
     no = round(sub_no/totalsub,2)
@@ -167,7 +172,10 @@ def table_generator(table):
     geo_uc = (peo_table['US'][0]+peo_table['CA'][0])/peo_table['total'][0]
     geo_sm = (peo_table['SG'][0]+peo_table['MY'][0])/peo_table['total'][0]
     geo_cn = (peo_table['CN'][0]+peo_table['HK'][0]+peo_table['MO'][0])/peo_table['total'][0]
-    geo_other = 1-(geo_tw+geo_uc+geo_sm+geo_cn)
+    if (geo_tw+geo_uc+geo_sm+geo_cn) == 0:
+        geo_other = 0
+    else:
+        geo_other = 1-(geo_tw+geo_uc+geo_sm+geo_cn)
 
     geo_table = {
         "台灣地區":[geo_tw],
@@ -229,6 +237,7 @@ aud = {
 aud = pd.DataFrame(aud)
 
 for video in video_list:
+    print('讀取表格"{}"的資料'.format(video))
     table = pd.read_csv('video_table/table_{}.csv'.format(video),encoding = 'utf-8-sig')
     aud_1 = table_generator(table)
     aud = pd.concat([aud,aud_1],ignore_index=True)
